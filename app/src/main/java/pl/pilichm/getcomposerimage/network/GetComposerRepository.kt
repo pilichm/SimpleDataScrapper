@@ -7,16 +7,18 @@ import org.jsoup.Jsoup
 
 class GetComposerRepository {
     companion object {
-        private const val base_url = "https://en.wikipedia.org/wiki/"
+//        private const val base_url = "https://en.wikipedia.org/wiki/"
+        private const val base_url = "http://www.google.com/"
     }
 
-    suspend fun makeRequest(composerName: String): Result<String> {
+    suspend fun searchForComposerWikipediaPage(composerName: String): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val url = "$base_url$composerName"
                 val conn = Jsoup.connect(url).method(Connection.Method.GET)
                 val resp = conn.execute()
-                Result.success(resp.body().toString())
+                println("RESPONSE: ${resp.body()}")
+                Result.success("ok")
             } catch (e: Exception) {
                 Result.failure(Exception("Cannot get composer image!"))
             }

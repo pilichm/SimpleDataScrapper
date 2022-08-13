@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 class GetComposerImageViewModel(private val getComposerRepository: GetComposerRepository): ViewModel() {
     fun getComposerImageUrl(composerName: String, imageView: ImageView) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getComposerRepository.makeRequest(composerName)
-            imageView.contentDescription = result.getOrNull()?.substring(100) ?: "Not found!"
-            println("RESULT::: ${result.getOrNull()?.substring(100)}")
+            val result = getComposerRepository.searchForComposerWikipediaPage(composerName)
+//            imageView.contentDescription = result.getOrNull()?.substring(100) ?: "Not found!"
+//            println("RESULT::: ${result.getOrNull()?.substring(100)}")
         }
     }
 }
