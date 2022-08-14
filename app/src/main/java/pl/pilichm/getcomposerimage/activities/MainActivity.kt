@@ -1,18 +1,26 @@
 package pl.pilichm.getcomposerimage.activities
 
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Environment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import kotlinx.coroutines.*
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivityMainBinding
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -30,35 +38,78 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         job = Job()
 
         binding.buttonSearchComposer.setOnClickListener {
-            val composerName = binding.editTextComposerName.text
-            if (!composerName.isNullOrEmpty()) {
-
-//                GetComposerImageViewModel(GetComposerRepository())
-//                    .getComposerImageUrl("John_Williams", binding.imageViewComposer)
-                launch {
-                    val result = getComposerWikipediaPage("John Williams")
-                    println("RESULT: $result")
-
-                    /**
-                     * Extract imageUrl from html document.
-                     */
-                    CoroutineScope(Dispatchers.IO).launch {
-                        runCatching {
-                            val document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                                .parse(result)
-                            println(1)
-                            val source = DOMSource(document)
-                            println(2)
-
-                        }.onSuccess {
-                            println("OK")
-                        }
+            val composerName: String = binding.editTextComposerName.text.toString()
+            if (composerName.isNotEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    runCatching {
+                        getComposerImageByName(composerName)
+                    }.onSuccess {
+                        println("OK")
                     }
                 }
-
             } else {
                 Toast.makeText(this, "Please enter search name!", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    /**
+     * Search duck duck go for passed composer name.
+     * Extract image url from html document.
+     */
+    private fun getComposerImageByName(composerName: String) {
+        val searchName = composerName.lowercase().replace(" ", "+")
+        println("SEARCH NAME: $searchName")
+        val searchUrl = "https://duckduckgo.com/html/?q=$searchName+wikipedia"
+        val doc: Document = Jsoup.connect(searchUrl).get()
+        val links: Elements = doc.select("img[src]")
+        var imageUrl = ""
+
+        imageLoop@ for (link in links) {
+            val src = link.attr("src")
+            if (src.lowercase().contains("jpg")||src.lowercase().contains("png")) {
+                println("IMAGE: $src")
+                imageUrl = src
+                break@imageLoop
+            }
+        }
+
+        /**
+         * If image url was found, download it and save to filesystem.
+         * */
+        if (imageUrl.isNotEmpty()) {
+            println("Downloading: $imageUrl")
+            val imageBitmap: Bitmap = Picasso.with(applicationContext).load(imageUrl).get()
+//            val imagePath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/composers"
+
+            val imagePath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/composers"
+
+            val composerDir = File(imagePath)
+
+            if (!composerDir.exists()){
+                composerDir.mkdir()
+            }
+
+            val imageFileName = composerName.lowercase().replace(" ", "_")
+            val imageFile = File(composerDir, "$imageFileName.jpg")
+
+            if (!imageFile.exists()) {
+                val fileOutputStream = FileOutputStream(imageFile)
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream)
+                fileOutputStream.flush()
+                fileOutputStream.close()
+                println("Saved new image.")
+            } else {
+                println("Image for composer $composerName already exists!")
+            }
+
+            println("PATH: $imagePath")
+            println("IMAGE LOADED!")
+
+            binding.imageViewComposer.setImageBitmap(imageBitmap)
+            println("IMAGE URI SET")
+        } else {
+            println("Image url for: $composerName not found!")
         }
     }
 
@@ -68,8 +119,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
      * */
     private suspend fun getComposerWikipediaPage(composerName: String) = suspendCoroutine<String> { cont ->
         val queue = Volley.newRequestQueue(this)
-        val query = "john+williams+wikipedia"
-        val url = "https://www.google.com/search?q=john+williams"
 
         val stringRequest = StringRequest(
             Request.Method.GET, "https://duckduckgo.com/html/?q=john+williams+wikipedia",
