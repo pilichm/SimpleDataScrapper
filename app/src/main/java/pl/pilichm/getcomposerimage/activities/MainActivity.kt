@@ -22,5 +22,13 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SearchForComposerImageActivity::class.java)
             startActivity(intent)
         }
+
+        /**
+         * Start activity for searching for album release year.
+         */
+        binding.buttonSearchForAlbumYear.setOnClickListener {
+            val intent = Intent(this, SearchForAlbumReleaseYearActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

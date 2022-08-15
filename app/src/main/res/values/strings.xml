@@ -4,4 +4,6 @@
     <string name="button_search_for_composer_image">Search for composer image</string>
     <string name="button_search_for_album_year">Search for album year</string>
     <string name="button_search_for_album_author">Search for album author</string>
+    <string name="year_unknown">Year unknown</string>
+    <string name="search_album_year">Search album year</string>
 </resources>

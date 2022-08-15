@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import pl.pilichm.getcomposerimage.Constants.Companion.DDG_SEARCH_URL
 import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivitySearchForComposerImageBinding
 import java.io.File
@@ -62,7 +63,7 @@ class SearchForComposerImageActivity : AppCompatActivity(), CoroutineScope {
     private fun getComposerImageByName(composerName: String) {
         val searchName = composerName.lowercase().replace(" ", "+")
         println("SEARCH NAME: $searchName")
-        val searchUrl = "https://duckduckgo.com/html/?q=$searchName+wikipedia"
+        val searchUrl = "$DDG_SEARCH_URL$searchName+wikipedia"
         val doc: Document = Jsoup.connect(searchUrl).get()
         val links: Elements = doc.select("img[src]")
         var imageUrl = ""
