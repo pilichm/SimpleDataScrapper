@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">GetComposerImage</string>
     <string name="button_search_text">Search</string>
+    <string name="button_search_for_composer_image">Search for composer image</string>
+    <string name="button_search_for_album_year">Search for album year</string>
+    <string name="button_search_for_album_author">Search for album author</string>
 </resources>
