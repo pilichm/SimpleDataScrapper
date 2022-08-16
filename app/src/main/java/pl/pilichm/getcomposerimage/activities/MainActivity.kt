@@ -19,16 +19,21 @@ class MainActivity : AppCompatActivity() {
          * Start activity for searching composer image.
          */
         binding.buttonSearchForComposerImage.setOnClickListener {
-            val intent = Intent(this, SearchForComposerImageActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, SearchForComposerImageActivity::class.java))
         }
 
         /**
          * Start activity for searching for album release year.
          */
         binding.buttonSearchForAlbumYear.setOnClickListener {
-            val intent = Intent(this, SearchForAlbumReleaseYearActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, SearchForAlbumReleaseYearActivity::class.java))
+        }
+
+        /**
+         * Start activity for searching albums author.
+         */
+        binding.buttonSearchForAlbumAuthor.setOnClickListener {
+            startActivity(Intent(this, SearchForAlbumComposerActivity::class.java))
         }
     }
 }
