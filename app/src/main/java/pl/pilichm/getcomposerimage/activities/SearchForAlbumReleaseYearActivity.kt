@@ -14,6 +14,7 @@ import org.jsoup.select.Elements
 import pl.pilichm.getcomposerimage.Constants.Companion.DDG_SEARCH_URL
 import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivitySearchForAlbumReleaseYearBinding
+import pl.pilichm.getcomposerimage.network.NetworkUtil
 import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
@@ -52,22 +53,12 @@ class SearchForAlbumReleaseYearActivity : AppCompatActivity(), CoroutineScope {
      * Returns first text from matched elements, that consists of four num digits.
      */
     private fun getAlbumReleaseYear(albumName: String): String {
-        val searchName = albumName.lowercase().replace(" ", "+")
-        val searchUrl = "$DDG_SEARCH_URL$searchName+movie+year"
-        val yearPattern = Pattern.compile("[0-9]{4}")
-
-        val doc: Document = Jsoup.connect(searchUrl).get()
-        val elements: Elements = doc.getElementsByClass("result__snippet")
-
-        for (element in elements) {
-            val elementText = element.text()
-            val matcher = yearPattern.matcher(elementText)
-            if (matcher.find()){
-                return elementText.substring(matcher.start(), matcher.end())
-            }
+        val wikipediaUrl = NetworkUtil.getWikipediaUrlForMovie(albumName)
+        return if (wikipediaUrl!= NetworkUtil.SEARCH_VALUE_NOT_FOUND) {
+            NetworkUtil.getMovieReleaseYearFromWikipedia(wikipediaUrl)
+        } else {
+            NetworkUtil.SEARCH_VALUE_NOT_FOUND
         }
-
-        return "Not found"
     }
 
     override fun onDestroy() {

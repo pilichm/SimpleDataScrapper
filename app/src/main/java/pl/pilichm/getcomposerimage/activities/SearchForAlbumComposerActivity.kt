@@ -1,15 +1,17 @@
 package pl.pilichm.getcomposerimage.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import pl.pilichm.getcomposerimage.R
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivitySearchForAlbumComposerBinding
+import pl.pilichm.getcomposerimage.network.NetworkUtil
+import pl.pilichm.getcomposerimage.network.NetworkUtil.Companion.SEARCH_VALUE_NOT_FOUND
 import kotlin.coroutines.CoroutineContext
 
 class SearchForAlbumComposerActivity : AppCompatActivity(), CoroutineScope {
@@ -42,7 +44,12 @@ class SearchForAlbumComposerActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun getAlbumAuthor(albumName: String): String {
-        return "Author not found!"
+        val wikipediaUrl = NetworkUtil.getWikipediaUrlForMovie(albumName)
+        return if (wikipediaUrl!=SEARCH_VALUE_NOT_FOUND) {
+            NetworkUtil.getScoreAuthorFromWikipedia(wikipediaUrl)
+        } else {
+            SEARCH_VALUE_NOT_FOUND
+        }
     }
 
     override fun onDestroy() {
