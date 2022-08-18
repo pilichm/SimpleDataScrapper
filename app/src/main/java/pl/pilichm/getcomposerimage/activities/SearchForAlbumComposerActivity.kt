@@ -44,7 +44,8 @@ class SearchForAlbumComposerActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun getAlbumAuthor(albumName: String): String {
-        val wikipediaUrl = NetworkUtil.getWikipediaUrlForMovie(albumName)
+        val query = NetworkUtil.convertTextToQuery("$albumName movie wikipedia")
+        val wikipediaUrl = NetworkUtil.getWikipediaUrlByQuery(query)
         return if (wikipediaUrl!=SEARCH_VALUE_NOT_FOUND) {
             NetworkUtil.getScoreAuthorFromWikipedia(wikipediaUrl)
         } else {

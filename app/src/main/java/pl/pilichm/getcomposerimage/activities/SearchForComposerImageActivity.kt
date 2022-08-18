@@ -20,6 +20,7 @@ import org.jsoup.select.Elements
 import pl.pilichm.getcomposerimage.Constants.Companion.DDG_SEARCH_URL
 import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivitySearchForComposerImageBinding
+import pl.pilichm.getcomposerimage.network.NetworkUtil
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.coroutines.CoroutineContext
@@ -43,7 +44,11 @@ class SearchForComposerImageActivity : AppCompatActivity(), CoroutineScope {
             if (composerName.isNotEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     runCatching {
-                        getComposerImageByName(composerName)
+//                        getComposerImageByName(composerName)
+                        val query = NetworkUtil.convertTextToQuery("$composerName+wikipedia")
+                        val wikipediaUrl = NetworkUtil.getWikipediaUrlByQuery(query)
+                        val imageUrl = NetworkUtil.getAuthorImageFromWikipedia(wikipediaUrl)
+                        println("Image: $imageUrl")
                     }.onSuccess {
                         println("OK")
                     }
@@ -83,7 +88,6 @@ class SearchForComposerImageActivity : AppCompatActivity(), CoroutineScope {
         if (imageUrl.isNotEmpty()) {
             println("Downloading: $imageUrl")
             val imageBitmap: Bitmap = Picasso.with(applicationContext).load(imageUrl).get()
-//            val imagePath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/composers"
 
             val imagePath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/composers"
 

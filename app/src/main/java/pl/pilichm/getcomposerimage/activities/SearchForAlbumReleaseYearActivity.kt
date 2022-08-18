@@ -1,21 +1,16 @@
 package pl.pilichm.getcomposerimage.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
-import pl.pilichm.getcomposerimage.Constants.Companion.DDG_SEARCH_URL
 import pl.pilichm.getcomposerimage.R
 import pl.pilichm.getcomposerimage.databinding.ActivitySearchForAlbumReleaseYearBinding
 import pl.pilichm.getcomposerimage.network.NetworkUtil
-import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
 class SearchForAlbumReleaseYearActivity : AppCompatActivity(), CoroutineScope {
@@ -53,7 +48,8 @@ class SearchForAlbumReleaseYearActivity : AppCompatActivity(), CoroutineScope {
      * Returns first text from matched elements, that consists of four num digits.
      */
     private fun getAlbumReleaseYear(albumName: String): String {
-        val wikipediaUrl = NetworkUtil.getWikipediaUrlForMovie(albumName)
+        val query = NetworkUtil.convertTextToQuery("$albumName movie wikipedia")
+        val wikipediaUrl = NetworkUtil.getWikipediaUrlByQuery(query)
         return if (wikipediaUrl!= NetworkUtil.SEARCH_VALUE_NOT_FOUND) {
             NetworkUtil.getMovieReleaseYearFromWikipedia(wikipediaUrl)
         } else {
