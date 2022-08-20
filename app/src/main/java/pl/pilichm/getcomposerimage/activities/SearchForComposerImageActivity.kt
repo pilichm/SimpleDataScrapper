@@ -44,11 +44,11 @@ class SearchForComposerImageActivity : AppCompatActivity(), CoroutineScope {
             if (composerName.isNotEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     runCatching {
-//                        getComposerImageByName(composerName)
-                        val query = NetworkUtil.convertTextToQuery("$composerName+wikipedia")
-                        val wikipediaUrl = NetworkUtil.getWikipediaUrlByQuery(query)
-                        val imageUrl = NetworkUtil.getAuthorImageFromWikipedia(wikipediaUrl)
-                        println("Image: $imageUrl")
+                        getComposerImageByName(composerName)
+//                        val query = NetworkUtil.convertTextToQuery("$composerName+wikipedia")
+//                        val wikipediaUrl = NetworkUtil.getWikipediaUrlByQuery(query)
+//                        val imageUrl = NetworkUtil.getAuthorImageFromWikipedia(wikipediaUrl)
+//                        println("Image: $imageUrl")
                     }.onSuccess {
                         println("OK")
                     }
